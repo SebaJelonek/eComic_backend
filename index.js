@@ -8,11 +8,13 @@ const pasteRoutes = require('./routes/pasteRoutes');
 const app = express();
 // middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({ origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE'] })
+);
 
 // DB connection and starting of server
 const dbURI =
-  'mongodb+srv://user1234:password1234@cluster0.pbmfd.mongodb.net/pasta_keeper?retryWrites=true&w=majority';
+  'mongodb+srv://user1234:password1234@cluster0.pbmfd.mongodb.net/eComicon?retryWrites=true&w=majority';
 mongoose.connect(dbURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
