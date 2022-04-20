@@ -8,16 +8,16 @@ const { Router } = require('express');
 const {
   putBanUser,
   getUserList,
-  loginPost,
+  login,
   registerPost,
   confirmUser,
 } = require('../controller/userController');
 
 const userRouter = Router();
 
-userRouter.get('/api/user/:token', confirmUser);
+userRouter.get('/api/user/confirm/:token', confirmUser);
 userRouter.put('/api/admin/ban-user', putBanUser);
-userRouter.post('/api/user/login', loginPost);
+userRouter.get('/api/user/:token', login);
 userRouter.post('/api/user/register', registerPost);
 userRouter.get('/api/admin/get-users', getUserList);
 

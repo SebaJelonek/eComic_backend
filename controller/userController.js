@@ -40,7 +40,7 @@ const confirmEmailToken = (id, email) => {
     process.env.MAIL_SECRET,
     { expiresIn: maxAge },
     (err, emailToken) => {
-      const url = `http://localhost:1337/api/user/${emailToken}`;
+      const url = `http://localhost:1337/api/user/confirm/${emailToken}`;
       transporter.sendMail({
         to: email,
         subject: 'Confirmation Email.',
@@ -96,9 +96,9 @@ const registerPost = async (req, res) => {
     }
   }
 };
-
-const loginPost = async (req, res) => {
-  const { findBy, password } = req.body;
+// hkm24571@jiooq.com
+const login = async (req, res) => {
+  const { findBy, password } = JSON.parse(req.params.token);
   try {
     const user = await User.login(findBy, password);
     const token = createToken(user.name, false, false);
@@ -131,7 +131,7 @@ const putBanUser = async (req, res) => {
 module.exports = {
   putBanUser,
   getUserList,
-  loginPost,
+  login,
   registerPost,
   confirmUser,
 };
