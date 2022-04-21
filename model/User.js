@@ -58,9 +58,11 @@ userSchema.statics.login = async function (findBy, password) {
     user = await this.findOne({ name: findBy });
   }
   let message;
-  if (!user.isConfirmed) {
+  if (user === null) {
+    message = 'Wrong email and/or password';
+  } else if (!user.isConfirmed) {
     message = 'You need to confirm your e-mail address';
-  } else if (user) {
+  } else {
     const auth = await bcrypt.compare(password, user.password);
     message = 'Name or password is incorrect';
     if (auth) {

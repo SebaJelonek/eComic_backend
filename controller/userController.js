@@ -4,32 +4,28 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const maxAge = 3 * 24 * 3600;
+const SECRET_1 = process.env.SECRET_1;
+const MAIL_SECRET = process.env.MAIL_SECRET;
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 
-let user = process.env.GMAIL_USER.split('');
-user.shift();
-user.pop();
-user.pop();
-user = user.join('');
-let password = process.env.GMAIL_PASSWORD.split('');
-password.pop();
-password = password.join('');
-
+//creating transporter via nodemailer
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: { user: user, pass: password },
+  host: 'smtp.gmail.com', // smtp address of gmail
+  port: 587, // the usual port for sending emails
+  secure: false, // with true it does not work
+  auth: { user: GMAIL_USER, pass: GMAIL_PASSWORD },
 });
 
 // creating token with jwt
 const createToken = (id, isAdmin, isBanned) => {
-  return jwt.sign({ id, isAdmin, isBanned }, process.env.SECRET_1, {
+  return jwt.sign({ id, isAdmin, isBanned }, SECRET_1, {
     expiresIn: maxAge,
   });
 };
 
-const confirmUser = async (req, res) => {
-  const { id } = jwt.verify(req.params.token, process.env.MAIL_SECRET);
+const confirmUserEmail = async (req, res) => {
+  const { id } = jwt.verify(req.params.token, MAIL_SECRET);
   await User.findOneAndUpdate({ _id: id }, { isConfirmed: true });
   return res.redirect('http://localhost:3000/');
 };
@@ -37,7 +33,7 @@ const confirmUser = async (req, res) => {
 const confirmEmailToken = (id, email) => {
   return jwt.sign(
     { id },
-    process.env.MAIL_SECRET,
+    MAIL_SECRET,
     { expiresIn: maxAge },
     (err, emailToken) => {
       const url = `http://localhost:1337/api/user/confirm/${emailToken}`;
@@ -51,7 +47,7 @@ const confirmEmailToken = (id, email) => {
   );
 };
 
-const registerPost = async (req, res) => {
+const register = async (req, res) => {
   const { name, email, password } = req.body;
   let message = 'We have sent you a confirmation e-mail';
   try {
@@ -102,8 +98,9 @@ const login = async (req, res) => {
   try {
     const user = await User.login(findBy, password);
     const token = createToken(user.name, false, false);
-    res.json({ status: 'ok', token });
+    res.json({ status: 'ok', token, admin: user.isAdmin });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -132,6 +129,6 @@ module.exports = {
   putBanUser,
   getUserList,
   login,
-  registerPost,
-  confirmUser,
+  register,
+  confirmUserEmail,
 };
