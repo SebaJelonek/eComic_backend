@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/User');
 const nodemailer = require('nodemailer');
+const Passport = require('passport');
 require('dotenv').config();
 
 const maxAge = 3 * 24 * 3600;
@@ -18,8 +19,8 @@ const transporter = nodemailer.createTransport({
 });
 
 // creating token with jwt
-const createToken = (id, isAdmin, isBanned) => {
-  return jwt.sign({ id, isAdmin, isBanned }, SECRET_1, {
+const createToken = (isAdmin, name, email) => {
+  return jwt.sign({ isAdmin, name, email }, SECRET_1, {
     expiresIn: maxAge,
   });
 };
@@ -49,11 +50,10 @@ const confirmEmailToken = (id, email) => {
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
-  let message = 'We have sent you a confirmation e-mail';
+  let message = 'You need to confirm your email first';
   try {
     const user = await User.create({ name, password, email });
-    const token = createToken(name, user.isAdmin, user.isBanned);
-    confirmEmailToken(user._id, email);
+    const token = confirmEmailToken(user._id, email);
     res.json({ status: 'ok', token, name, email, message });
   } catch (error) {
     console.log(error);
@@ -93,16 +93,20 @@ const register = async (req, res) => {
   }
 };
 // hkm24571@jiooq.com
-const login = async (req, res) => {
-  const { findBy, password } = JSON.parse(req.params.token);
-  try {
-    const user = await User.login(findBy, password);
-    const token = createToken(user.name, false, false);
-    res.json({ status: 'ok', token, admin: user.isAdmin });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ error: error.message });
-  }
+const login = async (req, res, next) => {
+  Passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      res.status(400).json({ status: '400', error: err });
+      throw err;
+    } else {
+      req.logIn(user.name, (err) => {
+        if (err) {
+          throw err;
+        }
+        res.json({ name: user.name, email: user.email });
+      });
+    }
+  })(req, res, next);
 };
 
 const getUserList = async (req, res) => {

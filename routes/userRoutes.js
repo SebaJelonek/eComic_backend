@@ -17,7 +17,7 @@ const userRouter = Router();
 
 userRouter.get('/api/user/confirm/:token', confirmUserEmail);
 userRouter.put('/api/admin/ban-user', putBanUser);
-userRouter.get('/api/user/:token', login);
+userRouter.post('/api/user', login);
 userRouter.post('/api/user/register', register);
 userRouter.get('/api/admin/get-users', getUserList);
 

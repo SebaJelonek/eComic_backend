@@ -52,24 +52,36 @@ userSchema.statics.login = async function (findBy, password) {
   // email: melo@gmail.com
   // name: evnskavbjj
   let user;
+  //if findBy includes @ check for user by email
+  //else check for user by name
   if (findBy.includes('@')) {
     user = await this.findOne({ email: findBy });
   } else {
     user = await this.findOne({ name: findBy });
   }
   let message;
+  //if user is not found send a message
   if (user === null) {
     message = 'Wrong email and/or password';
-  } else if (!user.isConfirmed) {
-    message = 'You need to confirm your e-mail address';
-  } else {
+    return message;
+  }
+  // if user did not confirm his email send message
+  else if (!user.isConfirmed) {
+    message = 'You need to confirm your e-mail address first';
+    return message;
+  }
+  // if user is found
+  // compare received password to user password
+  else {
     const auth = await bcrypt.compare(password, user.password);
-    message = 'Name or password is incorrect';
+    // if auth is true return user
     if (auth) {
       return user;
+    } else {
+      message = 'Name or password is incorrect';
+      return message;
     }
   }
-  throw Error(message);
 };
 
 const User = mongoose.model('user', userSchema);
