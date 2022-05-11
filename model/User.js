@@ -49,8 +49,6 @@ userSchema.pre('save', async function (next) {
 // creating login function
 // it is going to be use in order to verify users
 userSchema.statics.login = async function (findBy, password) {
-  // email: melo@gmail.com
-  // name: evnskavbjj
   let user;
   //if findBy includes @ check for user by email
   //else check for user by name
@@ -63,12 +61,10 @@ userSchema.statics.login = async function (findBy, password) {
   //if user is not found send a message
   if (user === null) {
     message = 'Wrong email and/or password';
-    return message;
   }
   // if user did not confirm his email send message
   else if (!user.isConfirmed) {
     message = 'You need to confirm your e-mail address first';
-    return message;
   }
   // if user is found
   // compare received password to user password
@@ -79,9 +75,9 @@ userSchema.statics.login = async function (findBy, password) {
       return user;
     } else {
       message = 'Name or password is incorrect';
-      return message;
     }
   }
+  return message;
 };
 
 const User = mongoose.model('user', userSchema);

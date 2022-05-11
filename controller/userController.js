@@ -93,20 +93,42 @@ const register = async (req, res) => {
   }
 };
 // hkm24571@jiooq.com
-const login = async (req, res, next) => {
-  Passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      res.status(400).json({ status: '400', error: err });
-      throw err;
-    } else {
-      req.logIn(user.name, (err) => {
-        if (err) {
-          throw err;
-        }
-        res.json({ name: user.name, email: user.email });
-      });
-    }
-  })(req, res, next);
+const login =
+  ('/login',
+  (req, res, next) => {
+    Passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        throw err;
+      }
+      if (!user) res.send('No User Exists');
+      else {
+        req.logIn(user, (err) => {
+          if (err) throw err;
+          res.send('Successfully Authenticated');
+          console.log(req.session);
+        });
+      }
+    })(req, res, next);
+  });
+
+// const verify = (req, res, next) => {
+//   Passport.authenticate('local', () => {
+//     if (!req.isAuthenticated()) {
+//       console.log('\nisAuthenticated: ' + req.isAuthenticated() + '\n');
+//       res.json({ status: 'is baaad' });
+//     } else {
+//       console.log(req.session);
+//       console.log(req.isAuthenticated());
+//       res.json({ status: 'ok' });
+//     }
+//     console.log('veryfi');
+//     console.log(req.session);
+//   })(req, res, next);
+// };
+
+const justGetRoute = (req, res) => {
+  res.send(req.user);
+  console.log(req.user);
 };
 
 const getUserList = async (req, res) => {
@@ -135,4 +157,6 @@ module.exports = {
   login,
   register,
   confirmUserEmail,
+  // verify,
+  justGetRoute,
 };
