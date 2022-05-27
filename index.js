@@ -8,6 +8,8 @@ const Passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
+
+
 const app = express();
 
 // middleware
@@ -36,13 +38,18 @@ app.use(cookieParser(process.env.SECRET_2));
 app.use(Passport.initialize());
 app.use(Passport.session());
 require('./passportConfig')(Passport);
-// DB connection and starting of server
+///////////////////////////////////////////////////////
+//        DB connection and starting of server      //
+//////////////////////////////////////////////////////
 const dbURI =
-  'mongodb+srv://user1234:password1234@cluster0.pbmfd.mongodb.net/eComicon?retryWrites=true&w=majority';
+  'mongodb+srv://user1234:password1234@cluster0.pbmfd.mongodb.net/eComicon';
+
 mongoose.connect(dbURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 app.post('/api/verify', (req, res, next) => {
   Passport.authenticate('local', () => {
@@ -57,6 +64,13 @@ app.post('/api/verify', (req, res, next) => {
     console.log('veryfi');
     console.log(req.session);
   })(req, res, next);
+});
+
+app.post('/api/upload', (req, res) => {
+  console.log(req.body);
+  const fileNameDB = Date.now() + '__' + req.body.fileName;
+  console.log(fileNameDB);
+  res.json({ status: 'ok', msg: `File: ${fileNameDB} has been saved` });
 });
 
 app.listen(process.env.PORT || 1337, () => {

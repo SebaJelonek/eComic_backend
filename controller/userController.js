@@ -9,6 +9,8 @@ const SECRET_1 = process.env.SECRET_1;
 const MAIL_SECRET = process.env.MAIL_SECRET;
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
+console.log('user: ' + GMAIL_USER);
+console.log('password: ' + GMAIL_PASSWORD);
 
 //creating transporter via nodemailer
 const transporter = nodemailer.createTransport({
@@ -80,6 +82,7 @@ const register = async (req, res) => {
       //sending res back to client
       res.status(400).json({ status: 'error', message });
     } else {
+      console.log(error.errors);
       message = error.errors.email.properties.message;
 
       capitalLetter = message[0].toUpperCase();

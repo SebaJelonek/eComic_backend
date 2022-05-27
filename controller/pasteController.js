@@ -1,11 +1,11 @@
-const Paste = require('../model/Paste');
+const Comic = require('../model/Comic');
 
-const postNewPaste = async (req, res) => {
+const newPaste = async (req, res) => {
   const { name, pasteTitle, pasteBody } = req.body;
-  paste = new Paste({ name, pasteTitle, pasteBody });
+  comic = new Comic({ name, pasteTitle, pasteBody });
 
   try {
-    await Paste.create({ name, pasteTitle, pasteBody });
+    await Comic.create({ name, pasteTitle, pasteBody });
     res.json({
       status: 'ok',
       message: `${paste.pasteTitle} has been created!`,
@@ -20,7 +20,7 @@ const postNewPaste = async (req, res) => {
   );
 };
 
-const postFindPasteByName = async (req, res) => {
+const findPasteByName = async (req, res) => {
   const { name } = req.body;
   try {
     const paste = await Paste.find({ name });
@@ -61,8 +61,8 @@ const deletePaste = async (req, res) => {
 };
 
 module.exports = {
-  postNewPaste,
-  postFindPasteByName,
+  // postNewPaste,
+  // postFindPasteByName,
   getAllPastes,
   putEditPaste,
   deletePaste,
