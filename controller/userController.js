@@ -5,12 +5,7 @@ const Passport = require('passport');
 require('dotenv').config();
 
 const maxAge = 3 * 24 * 3600;
-const SECRET_1 = process.env.SECRET_1;
-const MAIL_SECRET = process.env.MAIL_SECRET;
-const GMAIL_USER = process.env.GMAIL_USER;
-const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
-console.log('user: ' + GMAIL_USER);
-console.log('password: ' + GMAIL_PASSWORD);
+const { SECRET_1, GMAIL_PASSWORD, GMAIL_USER, MAIL_SECRET } = process.env;
 
 //creating transporter via nodemailer
 const transporter = nodemailer.createTransport({

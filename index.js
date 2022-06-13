@@ -1,18 +1,22 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+require('./mongoConnection');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
-const pasteRoutes = require('./routes/pasteRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const comicRoutes = require('./routes/comicRoutes');
 const Passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-
-
+// const bodyParser = require('body-parser');
 
 const app = express();
-
 // middleware
+
+///////////////////////////////////////////////////////
+//        DB connection and starting of server      //
+//////////////////////////////////////////////////////
+
 app.use(express.json());
 app.use(
   cors({
@@ -33,45 +37,12 @@ app.use(
   })
 );
 app.use(userRoutes);
-app.use(pasteRoutes);
+app.use(uploadRoutes);
+app.use(comicRoutes);
 app.use(cookieParser(process.env.SECRET_2));
 app.use(Passport.initialize());
 app.use(Passport.session());
 require('./passportConfig')(Passport);
-///////////////////////////////////////////////////////
-//        DB connection and starting of server      //
-//////////////////////////////////////////////////////
-const dbURI =
-  'mongodb+srv://user1234:password1234@cluster0.pbmfd.mongodb.net/eComicon';
-
-mongoose.connect(dbURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-app.post('/api/verify', (req, res, next) => {
-  Passport.authenticate('local', () => {
-    if (!req.isAuthenticated()) {
-      console.log('\nisAuthenticated: ' + req.isAuthenticated() + '\n');
-      res.json({ status: 'is baaad' });
-    } else {
-      console.log(req.session);
-      console.log(req.isAuthenticated());
-      res.json({ status: 'ok' });
-    }
-    console.log('veryfi');
-    console.log(req.session);
-  })(req, res, next);
-});
-
-app.post('/api/upload', (req, res) => {
-  console.log(req.body);
-  const fileNameDB = Date.now() + '__' + req.body.fileName;
-  console.log(fileNameDB);
-  res.json({ status: 'ok', msg: `File: ${fileNameDB} has been saved` });
-});
 
 app.listen(process.env.PORT || 1337, () => {
   console.log('i am listing');
