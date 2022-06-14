@@ -1,8 +1,14 @@
 const { Router } = require('express');
 
-const { uploadFiles, uploadFields } = require('../controller/uploadController');
+const {
+  uploadFiles,
+  uploadFields,
+  downloadFilesByID,
+} = require('../controller/uploadController');
 
-const uploadRouter = new Router();
-uploadRouter.post('/api/admin/filesUpload', uploadFields, uploadFiles);
+const router = new Router();
 
-module.exports = uploadRouter;
+router.post('/api/admin/filesUpload', uploadFields, uploadFiles);
+router.get('/api/get-img/:id', downloadFilesByID);
+
+module.exports = router;

@@ -1,5 +1,6 @@
 const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
+const mongoose = require('mongoose');
 
 const storage = new GridFsStorage({
   url: process.env.MONGO_URI,
@@ -25,9 +26,35 @@ const uploadFields = upload.fields([
 ]);
 
 const uploadFiles = (req, res) => {
-  const pdfName = req.files.pdf[0].filename;
-  const imgName = req.files.thumbnail[0].filename;
-  res.json({ msg: 'files uploaded', pdfName, imgName });
+  console.log(req.files.pdf[0].id);
+  const pdfID = req.files.pdf[0].id.toString();
+  const imgID = req.files.thumbnail[0].id.toString();
+  res.json({ msg: 'files uploaded', pdfID, imgID });
 };
 
-module.exports = { uploadFiles, uploadFields };
+const conn = mongoose.createConnection(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+let gfs;
+conn.once('open', () => {
+  gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+    bucketName: 'uploads',
+  });
+});
+
+const downloadFilesByID = ({ params: { id } }, res) => {
+  const _id = new mongoose.Types.ObjectId(id);
+  gfs.find({ _id }).toArray((err, file) => {
+    if (err) {
+      return res.status(400).json({ msg: 'error file not found' });
+    }
+    if (!file || file.length === 0) {
+      return res.status(400).json({ msg: 'no file exists' });
+    }
+    gfs.openDownloadStream(_id).pipe(res);
+  });
+};
+
+module.exports = { uploadFiles, uploadFields, downloadFilesByID };

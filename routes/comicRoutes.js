@@ -1,9 +1,10 @@
 const { Router } = require('express');
 
-const { newComic } = require('../controller/comicController');
+const { newComic, comicList } = require('../controller/comicController');
 
-const pasteRouter = Router();
+const comicRoutes = Router();
 
-pasteRouter.post('/api/admin/new-comic', newComic);
+comicRoutes.get('/api/comic-list', comicList);
+comicRoutes.post('/api/admin/new-comic', newComic);
 
-module.exports = pasteRouter;
+module.exports = comicRoutes;
