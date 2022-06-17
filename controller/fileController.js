@@ -26,7 +26,6 @@ const uploadFields = upload.fields([
 ]);
 
 const uploadFiles = (req, res) => {
-  console.log(req.files.pdf[0].id);
   const pdfID = req.files.pdf[0].id.toString();
   const imgID = req.files.thumbnail[0].id.toString();
   res.json({ msg: 'files uploaded', pdfID, imgID });

@@ -3,7 +3,7 @@ const cors = require('cors');
 require('./mongoConnection');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
+const uploadRoutes = require('./routes/fileRoutes');
 const comicRoutes = require('./routes/comicRoutes');
 const Passport = require('passport');
 const session = require('express-session');

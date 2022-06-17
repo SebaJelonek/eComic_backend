@@ -9,15 +9,12 @@ const newComic = async (req, res) => {
     thumbnailID: imgID,
     pdfFileID: pdfID,
   });
-  res.json({ msg: 'comic created' });
+  res.json({ msg: 'Comic has been created' });
 };
 
 const comicList = async (req, res) => {
   const comic = await Comic.find();
-  console.log(comic);
-  const { pdfFileName, thumbnailName } = comic;
-  console.log(pdfFileName);
-  res.json({ msg: 'we goot', comic });
+  res.json({ comic });
 };
 
 module.exports = {
