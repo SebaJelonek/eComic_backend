@@ -24,11 +24,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isBanned: {
+    isConfirmed: {
       type: Boolean,
       default: false,
     },
-    isConfirmed: {
+    isArtist: {
       type: Boolean,
       default: false,
     },

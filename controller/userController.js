@@ -47,13 +47,13 @@ const confirmEmailToken = (id, email) => {
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
-  let message = 'You need to confirm your email first';
+  let message = 'Confirmation email has been send, please check your inbox';
   try {
     const user = await User.create({ name, password, email });
     const token = confirmEmailToken(user._id, email);
     res.json({ status: 'ok', token, name, email, message });
   } catch (error) {
-    console.log(error);
+    // console.log(error.errors);
     let userName;
     if (error.code === 11000) {
       //splitting array in '{' point
@@ -73,11 +73,11 @@ const register = async (req, res) => {
 
       // adding additional information at the end
       message = userName + ' is already taken.';
-
+      console.log(message);
       //sending res back to client
       res.status(400).json({ status: 'error', message });
-    } else {
-      console.log(error.errors);
+    } else if (error.errors.email !== undefined) {
+      // console.log(error.errors);
       message = error.errors.email.properties.message;
 
       capitalLetter = message[0].toUpperCase();
@@ -85,8 +85,14 @@ const register = async (req, res) => {
       message.shift();
       message = message.join('');
       message = capitalLetter.concat(message);
+      console.log(message);
 
       res.status(400).json({ status: 'error', message });
+    } else if (error.errors.password !== undefined) {
+      res.json({
+        status: 400,
+        message: error.errors.password.properties.message,
+      });
     }
   }
 };
@@ -98,11 +104,18 @@ const login =
       if (err) {
         throw err;
       }
-      if (!user) res.send('No User Exists');
+      if (!user)
+        res.json({ status: 400, message: 'Username or password incorrect' });
       else {
         req.logIn(user, (err) => {
           if (err) throw err;
-          res.send('Successfully Authenticated');
+          console.log(user);
+          res.json({
+            msg: 'Successfully Authenticated',
+            name: user.name,
+            email: user.email,
+            isArtist: user.isArtist,
+          });
           console.log(req.session);
         });
       }
