@@ -22,6 +22,10 @@ const eComicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+    },
   },
   { collection: 'eComic' }
 );
