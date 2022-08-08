@@ -96,7 +96,7 @@ const register = async (req, res) => {
     }
   }
 };
-// hkm24571@jiooq.com
+
 const login =
   ('/login',
   (req, res, next) => {
@@ -109,6 +109,7 @@ const login =
       else {
         req.logIn(user, (err) => {
           if (err) throw err;
+          console.log('login route: ');
           console.log(user);
           res.json({
             msg: 'Successfully Authenticated',
@@ -116,58 +117,23 @@ const login =
             email: user.email,
             isArtist: user.isArtist,
           });
+          console.log('login route session: ');
           console.log(req.session);
         });
       }
     })(req, res, next);
   });
 
-// const verify = (req, res, next) => {
-//   Passport.authenticate('local', () => {
-//     if (!req.isAuthenticated()) {
-//       console.log('\nisAuthenticated: ' + req.isAuthenticated() + '\n');
-//       res.json({ status: 'is baaad' });
-//     } else {
-//       console.log(req.session);
-//       console.log(req.isAuthenticated());
-//       res.json({ status: 'ok' });
-//     }
-//     console.log('veryfi');
-//     console.log(req.session);
-//   })(req, res, next);
-// };
-
-const justGetRoute = (req, res) => {
-  res.send(req.user);
-  console.log(req.user);
-};
-
-const getUserList = async (req, res) => {
-  try {
-    const userList = await User.find();
-    res.json({ status: 'ok', userList });
-  } catch (error) {
-    res.status(400).json({ error });
-  }
-};
-
-const putBanUser = async (req, res) => {
-  try {
-    const { _id, isAdmin, isBanned } = req.body;
-    await User.findOneAndUpdate({ _id }, { isBanned: true });
-    const token = createToken(_id, isAdmin, isBanned);
-    res.json({ status: 'ok', message: 'user has been banned', token });
-  } catch (error) {
-    console.log(error);
-  }
+const verify = (req, res, next) => {
+  console.log('verify session: ');
+  Passport.authenticate('local', (err, user, info) => {
+    console.log(req.session);
+  });
 };
 
 module.exports = {
-  putBanUser,
-  getUserList,
   login,
   register,
   confirmUserEmail,
-  // verify,
-  justGetRoute,
+  verify,
 };
