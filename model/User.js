@@ -20,6 +20,9 @@ const userSchema = mongoose.Schema(
       validate: [isEmail, 'invalid email'],
       unique: true,
     },
+    favoriteList: {
+      type: Array,
+    },
     isAdmin: {
       type: Boolean,
       default: false,

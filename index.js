@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://ecomic-backend.onrender.com',
     credentials: true,
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE'],
   })

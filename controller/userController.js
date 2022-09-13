@@ -9,9 +9,7 @@ const { SECRET_1, GMAIL_PASSWORD, GMAIL_USER, MAIL_SECRET } = process.env;
 
 //creating transporter via nodemailer
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com', // smtp address of gmail
-  port: 587, // the usual port for sending emails
-  secure: false, // with true it does not work
+  service: 'gmail',
   auth: { user: GMAIL_USER, pass: GMAIL_PASSWORD },
 });
 
@@ -63,7 +61,7 @@ const register = async (req, res) => {
 
       userName.shift(); //deleting first char
       userName.pop(); //deleting last char
-      userName.pop(); //deleteing last char again
+      userName.pop(); //deleting last char again
 
       //creating variable which holds first char as capital latter
       userNameCapital = userName[0].toUpperCase();
@@ -108,14 +106,18 @@ const login =
         res.json({ status: 400, message: 'Username or password incorrect' });
       else {
         req.logIn(user, (err) => {
+          const { name, email, isAdmin, isArtist, _id, favoriteList } = user;
           if (err) throw err;
           console.log('login route: ');
           console.log(user);
           res.json({
             msg: 'Successfully Authenticated',
-            name: user.name,
-            email: user.email,
-            isArtist: user.isArtist,
+            name,
+            email,
+            isArtist,
+            id: _id,
+            favoriteList,
+            isAdmin,
           });
           console.log('login route session: ');
           console.log(req.session);
@@ -131,9 +133,37 @@ const verify = (req, res, next) => {
   });
 };
 
+const addToFavorite = async (req, res) => {
+  const userId = req.body.userId;
+  const comicId = req.body.comicId;
+  let user = await User.findById(userId);
+  let favoriteList = user.favoriteList;
+  let message = '';
+
+  if (favoriteList.includes(comicId)) {
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { favoriteList: comicId } }
+    );
+    message = 'Comic has been deleted from favorite list';
+  } else {
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { favoriteList: comicId } }
+    );
+    message = 'Comic has been added to favorite list';
+  }
+
+  user = await User.findById(userId);
+  favoriteList = user.favoriteList;
+
+  res.status(200).json({ message, favoriteList });
+};
+
 module.exports = {
   login,
   register,
   confirmUserEmail,
   verify,
+  addToFavorite,
 };

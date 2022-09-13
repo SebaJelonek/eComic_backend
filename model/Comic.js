@@ -26,6 +26,10 @@ const eComicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isConfirmed: {
+      type: Boolean,
+      default: false,
+    },
   },
   { collection: 'eComic' }
 );

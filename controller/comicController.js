@@ -21,12 +21,34 @@ const comicList = async (req, res) => {
 const userComicCollection = async (req, res) => {
   const { userEmail } = req.params;
   const comicCollection = await Comic.find({ userEmail });
-  console.log(comicCollection);
   res.json({ comicCollection });
+};
+
+const unConfirmedComicList = async (req, res) => {
+  const unConfirmedComicList = await Comic.find({ isConfirmed: false });
+  res.json({ unConfirmedComicList });
+};
+
+const confirmComic = async (req, res) => {
+  const comicId = req.body.comicId;
+  console.log(comicId);
+  await Comic.findOneAndUpdate({ _id: comicId }, { isConfirmed: true });
+  const unConfirmedComicList = await Comic.find({ isConfirmed: false });
+  res.status(200).json({ msg: 'comic accepted', unConfirmedComicList });
+};
+
+const rejectComic = async (req, res) => {
+  const comicId = req.body.comicId;
+  const unConfirmedComicList = await Comic.find({ isConfirmed: false });
+  Comic.findOneAndUpdate({ _id: comicId }, { isRejected: true });
+  res.status(200).json({ msg: 'comic rejected', unConfirmedComicList });
 };
 
 module.exports = {
   newComic,
   comicList,
   userComicCollection,
+  unConfirmedComicList,
+  confirmComic,
+  rejectComic,
 };
