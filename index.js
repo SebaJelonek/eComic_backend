@@ -18,13 +18,7 @@ const app = express();
 //////////////////////////////////////////////////////
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: process.env.ORIGIN,
-    credentials: true,
-    methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE'],
-  })
-);
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   session({
