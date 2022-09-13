@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: 'https://ecomic-backend.onrender.com',
+    origin: 'https://ecomicon.netlify.app/',
     credentials: true,
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE'],
   })
